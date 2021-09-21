@@ -1,44 +1,53 @@
 let XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-function makeAJAXCall(methodType, url, callback, async = true, data = null){
-    let xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function(){
-        console.log("State Changed Called. Ready State : " + xhr.readyState + "Status : " + xhr.status);
-        if(xhr.readyState == 4){
-            if(xhr.status == 200 || xhr.status == 201){
-                callback(xhr.responseText);
+function makePromiseCall(methodType, url, async = true, data = null){
+    return new Promise(function (resolve, reject){
+        let xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function(){
+            console.log("State Changed Called. Ready State : " + xhr.readyState + "Status : " + xhr.status);
+            if(xhr.status.toString().match('^[2][0,9]{2}$')){
+                resolve(xhr.responseText);
             }
-            else if(xhr.status >= 400){
-                console.log("Response Error");
+            else if(xhr.statustoString().match('^[4,5][0,9]{2}$')){
+                reject({
+                    status: xhr.status,
+                    statusText: xhr.statusText
+                });
+                console.log("XHR Failed");
             }
         }
-    }
-    xhr.open(methodType, url, async);
-    if(data){
-        console.log(JSON.stringify(data));
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(JSON.stringify(data));
-    }
-    else{
-        xhr.send();
-    }
-    console.log(methodType + "request send to the server");
+        xhr.open(methodType, url, async);
+        if(data){
+            console.log(JSON.stringify(data));
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(data));
+        }
+        else{
+            xhr.send();
+        }
+        console.log(methodType + "request send to the server");
+    });
 }
 
-const getURL = "http://localhost:3000/employees";
-function getUserDetails(data){
-    console.log("Get User Data" + data);
-}
-makeAJAXCall("GET", getURL, getUserDetails);
+const getURL = "http://localhost:3000/employees/1";
+makePromiseCall("GET", getURL, true)
+    .then(responseText => {
+        console.log("Get User Data : " + responseText);
+    })
+    .catch(error => console.log("GET Error Status : " + JSON.stringify(error)));
 
-const deleteURL = "http://localhost:3000/employees/4";
-function userDeleted(data){
-    console.log("User Deleted" + data);
-}
-makeAJAXCall("DELETE", deleteURL, userDeleted, false);
+
+const deleteURL = "http://localhost:3000/employees/3";
+makePromiseCall("DELETE", deleteURL, false)
+    .then(responseText => {
+        console.log("User Deleted : " + responseText);
+    })
+    .catch(error => console.log("DELETE Error Status : " + JSON.stringify(error)));
+
 
 const postURL = "http://localhost:3000/employees";
-const empData = {"name": "Deepak","salary": "80000"};
-function userAdded(data){
-    console.log("User Added  : " + data);
-}
-makeAJAXCall("POST", postURL, userAdded, true, empData);
+const empData = {"name": "Vyshak","salary": "30000"};
+makePromiseCall("POST", postURL, true, empData)
+    .then(responseText => {
+        console.log("User Added : " + responseText);
+    })
+    .catch(error => console.log("POST Error Status : " + JSON.stringify(error)));
