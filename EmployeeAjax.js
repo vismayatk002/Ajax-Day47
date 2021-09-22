@@ -2,9 +2,10 @@
 function makePromiseCall(methodType, url, async = true, data = null){
     return new Promise(function (resolve, reject){
         let xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function(){
+        xhr.onload = function(){
             console.log("State Changed Called. Ready State : " + xhr.readyState + "Status : " + xhr.status);
             if(xhr.status.toString().match('^[2][0,9]{2}$')){
+                // console.log(xhr.responseText);
                 resolve(xhr.responseText);
             }
             else if(xhr.status.toString().match('^[4,5][0,9]{2}$')){
@@ -15,6 +16,7 @@ function makePromiseCall(methodType, url, async = true, data = null){
                 console.log("XHR Failed");
             }
         }
+
         xhr.open(methodType, url, async);
         if(data){
             console.log(JSON.stringify(data));

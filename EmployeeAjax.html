@@ -21,32 +21,33 @@
         <h1>The Test Services Result</h1>
         <div id="get_services"></div>
         <div id="delete_services"></div>
+        <button onclick="postData()">Post Data</button>
         <div id="post_services"></div>
         <script>
             const getURL = "http://localhost:3000/employees/1";
             makePromiseCall("GET", getURL, true)
                 .then(responseText => {
-                    console.log(responseText);
                     document.querySelector("#get_services").textContent = "Get User Data : " + responseText;
             })
             .catch(error => console.log("GET Error Status : " + JSON.stringify(error)));
 
-
-            const deleteURL = "http://localhost:3000/employees/8";
+            const deleteURL = "http://localhost:3000/employees/18";
             makePromiseCall("DELETE", deleteURL, false)
                 .then(responseText => {
                     document.querySelector("#delete_services").textContent = "Deleted Data : " + responseText;
             })
             .catch(error => console.log("DELETE Error Status : " + JSON.stringify(error)));
-
-
-            const postURL = "http://localhost:3000/employees";
-            const empData = {"name": "Vyshavi","salary": "35000"};
-            makePromiseCall("POST", postURL, true, empData)
-                .then(responseText => {
-                    document.querySelector("#post_services").textContent = "New User Data : " + responseText;
-            })
-            .catch(error => console.log("POST Error Status : " + JSON.stringify(error)));
+            function postData(){
+                const postURL = "http://localhost:3000/employees";
+                const empData = {"name": "Malu k","salary": "45000"};
+                makePromiseCall("POST", postURL, true, empData)
+                    .then(responseText => {
+                        document.querySelector("#post_services").textContent = "New User Data : " + responseText;
+                        return true;
+                })
+                .catch(error => console.log("POST Error Status : " + JSON.stringify(error)));
+            }
+            
         </script>
     </body>
 </html>
